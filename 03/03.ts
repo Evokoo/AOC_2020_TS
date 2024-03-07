@@ -10,12 +10,25 @@ export function solveA(fileName: string, day: string): number {
 	return trees;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		grid = parseInput(data),
+		slopes = [
+			{ x: 1, y: 1 },
+			{ x: 3, y: 1 },
+			{ x: 5, y: 1 },
+			{ x: 7, y: 1 },
+			{ x: 1, y: 2 },
+		],
+		result = slopes.reduce(
+			(product, slope) => product * checkPath(grid, slope),
+			1
+		);
+
+	return result;
 }
 
 //Run
-solveA("example_a", "03");
+solveB("example_b", "03");
 
 // Functions
 type XY = { x: number; y: number };
