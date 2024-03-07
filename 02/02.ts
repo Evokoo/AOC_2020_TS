@@ -45,17 +45,35 @@ function parseInput(data: string) {
 function validatePasswords(policyTests: PolicyTest[], method: string) {
 	const valid: Set<string> = new Set();
 
-	for (let test of policyTests) {
-		const target = test.policy.character;
-		const count = [...test.password].reduce(
-			(acc, cur) => acc + (cur === target ? 1 : 0),
-			0
-		);
+	if (method === "A") {
+		for (let test of policyTests) {
+			const target = test.policy.character;
+			const count = [...test.password].reduce(
+				(acc, cur) => acc + (cur === target ? 1 : 0),
+				0
+			);
 
-		if (count >= test.policy.min && count <= test.policy.max) {
-			valid.add(test.password);
+			if (count >= test.policy.min && count <= test.policy.max) {
+				valid.add(test.password);
+			}
 		}
+
+		return valid;
 	}
 
-	return valid;
+	if (method === "B") {
+		for (let test of policyTests) {
+			const target = test.policy.character;
+			const a = test.password[test.policy.min - 1] === target;
+			const b = test.password[test.policy.max - 1] === target;
+
+			if (a !== b) {
+				valid.add(test.password);
+			}
+		}
+
+		return valid;
+	}
+
+	throw Error("Invalid validation method");
 }
