@@ -10,8 +10,8 @@ fi
 folder_name="$1"
 
 # Template files
-solution_file="$PWD/00/solution.ts"
-test_file="$PWD/00/tests.test.ts"
+solution_file="$PWD/00/00.ts"
+test_file="$PWD/00/00.test.ts"
 
 # Create and access new folder
 mkdir "$folder_name" && cd "$folder_name"
