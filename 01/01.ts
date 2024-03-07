@@ -16,7 +16,7 @@ export function solveB(fileName: string, day: string): number {
 }
 
 //Run
-solveA("example_a", "01");
+solveB("example_b", "01");
 
 // Functions
 function parseInput(data: string) {
@@ -37,4 +37,21 @@ function twoSum(values: number[], target: number) {
 
 	throw Error("Pair not found");
 }
-function threeSum(values: number[], target: number) {}
+function threeSum(values: number[], target: number) {
+	const valueSet: Set<number> = new Set([...values]);
+
+	for (let i = 0; i < values.length; i++) {
+		const a = values[i];
+
+		for (let j = i + 1; j < values.length; j++) {
+			const b = values[j];
+			const c = target - (a + b);
+
+			if (valueSet.has(c)) {
+				return a * b * c;
+			}
+		}
+	}
+
+	throw Error("Combination not found");
+}
