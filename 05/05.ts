@@ -5,17 +5,20 @@ import TOOLS from "../00/tools";
 export function solveA(fileName: string, day: string): number {
 	const data = TOOLS.readData(fileName, day),
 		boardingPasses = parseInput(data),
-		maxSeatID = locateSeats(boardingPasses);
+		{ maxID } = locateSeats(boardingPasses);
 
-	return maxSeatID;
+	return maxID;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		boardingPasses = parseInput(data),
+		{ seats } = locateSeats(boardingPasses);
+
+	return findSeatID(seats);
 }
 
 //Run
-solveA("example_a", "05");
+solveB("input", "05");
 
 // Functions
 type Seat = { x: number; y: number; ID: number };
@@ -56,5 +59,20 @@ function locateSeats(passes: string[]) {
 		seats.push(seat);
 	}
 
-	return maxID;
+	return { seats, maxID };
+}
+function findSeatID(seats: Seat[]) {
+	seats.sort((a, b) => a.ID - b.ID);
+
+	let ID = seats[0].ID;
+
+	for (let seat of seats.slice(1)) {
+		if (seat.ID - ID === 1) {
+			ID++;
+		} else {
+			return ID + 1;
+		}
+	}
+
+	throw Error("Seat not found");
 }
