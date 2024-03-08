@@ -35,7 +35,7 @@ function parseInput(data: string) {
 
 			for (let section of sections) {
 				const [key, value] = section.split(":");
-				passport[key] = value;
+				passport[key.trim()] = value.trim();
 			}
 		}
 
@@ -99,13 +99,11 @@ function validateDetails(passports: Passport[]) {
 	}
 	function isValidHairColour(colour: string | undefined): boolean {
 		if (!colour) return false;
-		return /^#[a-f0-9]{6}$/.test(colour.trim());
+		return /^#[a-f0-9]{6}$/.test(colour);
 	}
 	function isValidEyeColour(colour: string | undefined): boolean {
 		if (!colour) return false;
-		return ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].includes(
-			colour.trim()
-		);
+		return ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].includes(colour);
 	}
 	function isValidPID(pid: string | undefined): boolean {
 		if (!pid) return false;
