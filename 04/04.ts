@@ -14,11 +14,11 @@ export function solveB(fileName: string, day: string): number {
 		passports = parseInput(data),
 		validPassports = validateDetails(validateFields(passports));
 
-	return 0;
+	return validPassports.length;
 }
 
 //Run
-solveB("example_b", "04");
+solveB("input", "04");
 
 // Functions
 type Passport = { [key: string]: string };
@@ -72,11 +72,61 @@ function validateFields(passports: Passport[]) {
 	return valid;
 }
 function validateDetails(passports: Passport[]) {
-	const valid = [];
+	const valid: Passport[] = [];
+
+	function isValidYear(
+		year: string | undefined,
+		min: number,
+		max: number
+	): boolean {
+		if (!year) return false;
+		return +year >= min && +year <= max;
+	}
+	function isValidHeight(height: string | undefined): boolean {
+		if (!height) return false;
+
+		const [_, measure, unit] = height.match(/(\d+)(\w+)/) || [];
+
+		if (unit === "cm") {
+			return +measure >= 150 && +measure <= 193;
+		}
+
+		if (unit === "in") {
+			return +measure >= 59 && +measure <= 76;
+		}
+
+		return false;
+	}
+	function isValidHairColour(colour: string | undefined): boolean {
+		if (!colour) return false;
+		return /^#[a-f0-9]{6}$/.test(colour.trim());
+	}
+	function isValidEyeColour(colour: string | undefined): boolean {
+		if (!colour) return false;
+		return ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].includes(
+			colour.trim()
+		);
+	}
+	function isValidPID(pid: string | undefined): boolean {
+		if (!pid) return false;
+		return /^\d{9}$/.test(pid);
+	}
 
 	for (let passport of passports) {
-		const [key, value] = Object.entries(passport);
+		const { byr, iyr, eyr, hgt, hcl, ecl, pid } = passport;
 
-		console.log(key, value);
+		if (
+			isValidYear(byr, 1920, 2002) &&
+			isValidYear(iyr, 2010, 2020) &&
+			isValidYear(eyr, 2020, 2030) &&
+			isValidHeight(hgt) &&
+			isValidHairColour(hcl) &&
+			isValidEyeColour(ecl) &&
+			isValidPID(pid)
+		) {
+			valid.push(passport);
+		}
 	}
+
+	return valid;
 }
