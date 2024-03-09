@@ -7,11 +7,11 @@ const currentDay = path.basename(__dirname);
 describe(`AOC 2020 - Day ${currentDay}`, () => {
 	describe("Part A", () => {
 		test("Example", () => {
-			expect(solveA("example_a", currentDay)).toBe(null);
+			expect(solveA("example_a", currentDay)).toBe(11);
 		});
 
 		test("Solution", () => {
-			expect(solveA("input", currentDay)).toBe(null);
+			expect(solveA("input", currentDay)).toBe(6351);
 		});
 	});
 
