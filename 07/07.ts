@@ -10,12 +10,15 @@ export function solveA(fileName: string, day: string): number {
 	return validBags.size;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		bags = parseInput(data),
+		count = countBags(bags, "shiny gold");
+
+	return count;
 }
 
 //Run
-solveA("example_a", "07");
+solveB("example_b", "07");
 
 // Functions
 type Bag = { style: string; quantity: number };
@@ -68,4 +71,25 @@ function findBags(bags: Map<string, Bag[]>, target: string) {
 	}
 
 	return valid;
+}
+function countBags(bags: Map<string, Bag[]>, target: string) {
+	let count = 0;
+
+	const queue = bags.get(target)!;
+
+	while (queue.length) {
+		const current = queue.pop()!;
+		const innerBags = bags.get(current.style)!;
+
+		count += current.quantity;
+
+		for (const bag of innerBags) {
+			queue.push({
+				...bag,
+				quantity: bag.quantity * current.quantity,
+			});
+		}
+	}
+
+	return count;
 }
