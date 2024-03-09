@@ -10,12 +10,15 @@ export function solveA(fileName: string, day: string): number {
 	return score;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		groups = parseInput(data),
+		score = scoreGroups(groups, true);
+
+	return score;
 }
 
 //Run
-solveA("example_a", "06");
+solveB("example_b", "06");
 
 // Functions
 function parseInput(data: string) {
@@ -28,19 +31,26 @@ function parseInput(data: string) {
 
 	return groups;
 }
-function scoreGroups(groups: string[][]) {
+function scoreGroups(groups: string[][], partB: boolean = false) {
 	let score: number = 0;
 
 	for (const group of groups) {
-		const answeredYes: Set<string> = new Set();
+		const groupSize = group.length;
+		const questionScore: Record<string, number> = {};
 
 		for (const response of group) {
 			for (const answer of [...response]) {
-				answeredYes.add(answer);
+				questionScore[answer] = (questionScore[answer] ?? 0) + 1;
 			}
 		}
 
-		score += answeredYes.size;
+		for (const qScore of Object.values(questionScore)) {
+			if (partB) {
+				if (qScore === groupSize) score++;
+			} else {
+				if (qScore >= 1) score++;
+			}
+		}
 	}
 
 	return score;
