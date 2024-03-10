@@ -10,12 +10,15 @@ export function solveA(fileName: string, day: string): number {
 	return targetNumber;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		numbers = parseInput(data),
+		targetNumber = slidingTwoSum(numbers, fileName.startsWith("e") ? 5 : 25);
+
+	return sequentialSum(numbers, targetNumber);
 }
 
 //Run
-solveA("example_a", "09");
+// solveB("example_b", "09");
 
 // Functions
 function parseInput(data: string) {
@@ -43,4 +46,24 @@ function slidingTwoSum(numbers: number[], window: number) {
 	}
 
 	throw Error("Number not found");
+}
+function sequentialSum(numbers: number[], target: number) {
+	for (let i = 0; i < numbers.length; i++) {
+		let sum = numbers[i];
+		let arr = [numbers[i]];
+
+		for (let j = i + 1; j < numbers.length; j++) {
+			if ((sum += numbers[j]) > target) {
+				break;
+			} else {
+				arr.push(numbers[j]);
+			}
+
+			if (sum === target) {
+				return Math.min(...arr) + Math.max(...arr);
+			}
+		}
+	}
+
+	throw Error("Sequential sum not found");
 }
