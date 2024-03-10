@@ -5,17 +5,20 @@ import TOOLS from "../00/tools";
 export function solveA(fileName: string, day: string): number {
 	const data = TOOLS.readData(fileName, day),
 		insturctions = parseInput(data),
-		accumulator = runCode(insturctions);
+		{ accumulator } = runCode(insturctions);
 
 	return accumulator;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		insturctions = parseInput(data),
+		accumulator = fixLoop(insturctions);
+
+	return accumulator;
 }
 
 //Run
-solveA("example_a", "08");
+solveB("example_b", "08");
 
 // Functions
 type Instruction = { type: string; value: number };
@@ -35,11 +38,18 @@ function runCode(instructions: Instruction[]) {
 	const history: Set<number> = new Set();
 	const register: Record<string, number> = { acc: 0, index: 0 };
 
+	let status = "Complete";
+
 	while (true) {
 		if (history.has(register.index)) {
+			status = "Loop";
 			break;
 		} else {
 			history.add(register.index);
+		}
+
+		if (register.index >= instructions.length) {
+			break;
 		}
 
 		const instruction = instructions[register.index];
@@ -60,5 +70,27 @@ function runCode(instructions: Instruction[]) {
 		}
 	}
 
-	return register.acc;
+	return { status, accumulator: register.acc };
+}
+function fixLoop(instructions: Instruction[]) {
+	for (let i = 0; i < instructions.length; i++) {
+		const instruction = instructions[i];
+		const copy = [...instructions];
+
+		if (instruction.type === "acc") {
+			continue;
+		} else if (instruction.type === "jmp") {
+			copy[i] = { type: "nop", value: instruction.value };
+		} else if (instruction.type === "nop") {
+			copy[i] = { type: "jmp", value: instruction.value };
+		}
+
+		const { status, accumulator } = runCode(copy);
+
+		if (status === "Complete") {
+			return accumulator;
+		}
+	}
+
+	throw Error("Failed to fix loop");
 }
