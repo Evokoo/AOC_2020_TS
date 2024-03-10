@@ -10,20 +10,17 @@ export function solveA(fileName: string, day: string): number {
 	return result;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		adapters = parseInput(data),
+		combinations = arrangeAdapters(adapters);
+
+	return combinations;
 }
 
 //Run
-solveA("example_a", "10");
+solveB("example_b", "10");
 
 // Functions
-type Chain = {
-	adapters: number[];
-	index: number;
-	step: Record<string, number>;
-};
-
 function parseInput(data: string) {
 	const adapters = data
 		.split("\r\n")
@@ -43,4 +40,19 @@ function useAdapters(adapters: number[]) {
 	}
 
 	return joltDifference[0] * joltDifference[2];
+}
+function arrangeAdapters(adapters: number[]) {
+	adapters.unshift(0);
+
+	const arrangments: number[] = new Array(adapters.length).fill(0);
+
+	arrangments[0] = 1;
+
+	for (let i = 1; i < adapters.length; i++) {
+		for (let j = i - 1; j >= 0 && adapters[i] - adapters[j] <= 3; j--) {
+			arrangments[i] += arrangments[j];
+		}
+	}
+
+	return arrangments[adapters.length - 1];
 }
