@@ -75,20 +75,20 @@ function getSeatStateBySight(location: Point, grid: string[][]) {
 	const height = grid.length;
 	const width = grid[0].length;
 	const directions = new Map([
-		["N", { x: location.x, y: location.y, search: true }],
-		["S", { x: location.x, y: location.y, search: true }],
-		["E", { x: location.x, y: location.y, search: true }],
-		["W", { x: location.x, y: location.y, search: true }],
-		["NE", { x: location.x, y: location.y, search: true }],
-		["NW", { x: location.x, y: location.y, search: true }],
-		["SE", { x: location.x, y: location.y, search: true }],
-		["SW", { x: location.x, y: location.y, search: true }],
+		["N", location],
+		["S", location],
+		["E", location],
+		["W", location],
+		["NE", location],
+		["NW", location],
+		["SE", location],
+		["SW", location],
 	]);
 
 	let occupied = 0;
 
 	while (directions.size) {
-		for (const [direction, { x, y, search }] of directions) {
+		for (const [direction, { x, y }] of directions) {
 			let [nx, ny] = [x, y];
 
 			switch (direction) {
@@ -126,7 +126,7 @@ function getSeatStateBySight(location: Point, grid: string[][]) {
 			}
 
 			if (grid[ny][nx] === ".") {
-				directions.set(direction, { x: nx, y: ny, search: true });
+				directions.set(direction, { x: nx, y: ny });
 				continue;
 			}
 
