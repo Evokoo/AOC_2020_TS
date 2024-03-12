@@ -11,12 +11,15 @@ export function solveA(fileName: string, day: string): number {
 	return distance;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		directions = parseInput(data),
+		distance = navigateShip(directions, true);
+
+	return distance;
 }
 
 //Run
-solveA("example_a", "12");
+solveB("example_b", "12");
 
 // Functions
 type Direction = { command: string; amount: number };
@@ -31,11 +34,11 @@ function parseInput(data: string) {
 
 	return directions;
 }
-function navigateShip(directions: Direction[]) {
-	const ship = new Ship(0, 0, 90);
+function navigateShip(directions: Direction[], follow: boolean = false) {
+	const ship = new Ship(0, 0, 90, { x: 10, y: 1 });
 
 	for (const { command, amount } of directions) {
-		ship.update(command, amount);
+		ship.update(command, amount, follow);
 	}
 
 	return TOOLS.manhattanDistance(ship.position, { x: 0, y: 0 });
