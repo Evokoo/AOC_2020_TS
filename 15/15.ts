@@ -18,7 +18,7 @@ export function solveB(fileName: string, day: string): number {
 }
 
 //Run
-// solveB("example_b", "15");
+solveB("example_b", "15");
 
 // Functions
 function parseInput(data: string) {
@@ -47,7 +47,6 @@ function playGame(numbers: number[], target: number) {
 		last = number;
 
 		if (turn === target) {
-			console.log(number);
 			return number;
 		}
 	}
