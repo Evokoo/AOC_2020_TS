@@ -5,17 +5,20 @@ import TOOLS from "../00/tools";
 export function solveA(fileName: string, day: string): number {
 	const data = TOOLS.readData(fileName, day),
 		ticketInfo = parseInput(data),
-		errorRate = validateTickets(ticketInfo);
+		{ errorRate } = validateTickets(ticketInfo);
 
 	return errorRate;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		ticketInfo = parseInput(data),
+		{ validTickets } = validateTickets(ticketInfo);
+
+	return validateFields(ticketInfo, validTickets);
 }
 
 //Run
-solveA("input", "16");
+solveB("input", "16");
 
 // Functions
 type Range = { min: number; max: number };
@@ -49,31 +52,87 @@ function parseInput(data: string) {
 	return { fields, myTicket, otherTickets };
 }
 function validateTickets({ fields, otherTickets }: TicketInfo) {
-	const ranges = Object.values(fields).reduce(
-		(acc, cur) => acc.concat(cur),
-		[]
-	);
-	const invalid: number[] = [];
+	const validTickets: number[][] = [];
+	const ranges = Object.values(fields).reduce((a, b) => a.concat(b), []);
 
-	for (const ticket of otherTickets) {
+	let errorRate: number = 0;
+
+	while (otherTickets.length) {
+		const ticket = otherTickets.shift()!;
+
+		let validTicket = true;
+
 		for (const value of ticket) {
-			let valid: boolean = false;
+			let isValid: boolean = false;
 
 			for (const range of ranges) {
-				if (valid === true) {
+				if (isValid === true) {
 					break;
-				}
-
-				if (value >= range.min && value <= range.max) {
-					valid = true;
+				} else if (value >= range.min && value <= range.max) {
+					isValid = true;
 				}
 			}
 
-			if (valid === false) {
-				invalid.push(value);
+			if (!isValid) {
+				errorRate += value;
+				validTicket = false;
+			}
+		}
+
+		if (validTicket) {
+			validTickets.push(ticket);
+		}
+	}
+
+	return { errorRate, validTickets };
+}
+function validateFields({ fields, myTicket }: TicketInfo, tickets: number[][]) {
+	const fieldNames: string[] = Object.keys(fields);
+	const fieldScores: [string, number][][] = [];
+
+	for (let i = 0; i < tickets[0].length; i++) {
+		const score: Record<string, number> = {};
+
+		for (let j = 0; j < tickets.length; j++) {
+			const value = tickets[j][i];
+
+			for (const field of fieldNames) {
+				const result = fields[field].some(
+					({ min, max }) => value >= min && value <= max
+				);
+
+				if (result === true) {
+					score[field] = (score[field] ?? 0) + 1;
+				}
+			}
+		}
+
+		const results = Object.entries(score).sort((a, b) => b[1] - a[1]);
+		fieldScores.push(results);
+	}
+
+	const fieldOrder: string[] = Array(fieldNames.length).fill(undefined);
+	const assigned: Set<string> = new Set();
+
+	while (assigned.size !== fieldOrder.length) {
+		for (let i = 0; i < fieldScores.length; i++) {
+			if (fieldOrder[i] === undefined) {
+				const score = fieldScores[i].filter(
+					([key, value]) => value === tickets.length && !assigned.has(key)
+				);
+
+				if (score.length === 1) {
+					fieldOrder[i] = score[0][0];
+					assigned.add(score[0][0]);
+				}
 			}
 		}
 	}
 
-	return invalid.reduce((acc, cur) => acc + cur, 0);
+	const myScore = myTicket.reduce((score, value, i) => {
+		if (fieldOrder[i].startsWith("dep")) score *= value;
+		return score;
+	}, 1);
+
+	return myScore;
 }
