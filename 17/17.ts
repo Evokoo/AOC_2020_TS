@@ -15,7 +15,7 @@ export function solveB(fileName: string, day: string): number {
 }
 
 //Run
-solveA("example_a", "17");
+solveB("example_b", "17");
 
 // Functions
 type XYZ = { x: number; y: number; z: number };
