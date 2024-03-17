@@ -18,10 +18,10 @@ export function solveB(fileName: string, day: string): number {
 }
 
 //Run
-solveB("input", "17");
+// solveB("input", "17");
 
 // Functions
-type XYZ = { x: number; y: number; z: number; w: number };
+type Point = { x: number; y: number; z: number; w: number };
 type Cubes = Map<string, boolean>;
 type Range = { min: number; max: number };
 
@@ -40,7 +40,7 @@ function parseInput(data: string) {
 	return { cubes, xMax: rows[0].length, yMax: rows.length };
 }
 function getState(
-	point: XYZ,
+	point: Point,
 	isActive: boolean,
 	neighours: number[][],
 	cubes: Cubes
@@ -83,11 +83,7 @@ function generateNeigbours(fourthDimension: boolean = false) {
 					if (x === 0 && y === 0 && z === 0 && w === 0) {
 						continue;
 					} else {
-						if (fourthDimension) {
-							neighboringPoints.push([x, y, z, w]);
-						} else {
-							neighboringPoints.push([x, y, z]);
-						}
+						neighboringPoints.push([x, y, z, w]);
 					}
 				}
 			}
