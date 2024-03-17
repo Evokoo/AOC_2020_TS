@@ -13,12 +13,20 @@ export function solveA(fileName: string, day: string): number {
 	return sum;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		equations = parseInput(data),
+		sum = equations.reduce(
+			(total, equation) => total + +solveEquation(equation, true),
+			0
+		);
+
+	console.log(sum);
+
+	return sum;
 }
 
 //Run
-solveA("example_a", "18");
+solveB("example_b", "18");
 
 // Functions
 function parseInput(data: string) {
@@ -34,18 +42,35 @@ function solver(a: number, op: string, b: number): string {
 			throw Error("Invalid operator");
 	}
 }
-function solveEquation(equation: string) {
+function solveEquation(equation: string, isAdvanced: boolean = false) {
 	const basic = /(\d+) ([+*]) (\d+)/;
 	const braces = /\([\d\s+*]+\)/;
 
 	if (braces.test(equation)) {
 		const eq = equation.replace(/\(([\d\s+*]+)\)/, (_, $) => {
-			return solveEquation($);
+			return solveEquation($, isAdvanced);
 		});
-		return solveEquation(eq);
+		return solveEquation(eq, isAdvanced);
 	} else if (basic.test(equation)) {
-		const eq = equation.replace(basic, (_, a, op, b) => solver(+a, op, +b));
-		return solveEquation(eq);
+		if (isAdvanced) {
+			const addtion = /(\d+) (\+) (\d+)/;
+			const multiply = /(\d+) (\*) (\d+)/;
+
+			if (addtion.test(equation)) {
+				const eq = equation.replace(addtion, (_, a, op, b) =>
+					solver(+a, op, +b)
+				);
+				return solveEquation(eq, isAdvanced);
+			} else {
+				const eq = equation.replace(multiply, (_, a, op, b) =>
+					solver(+a, op, +b)
+				);
+				return solveEquation(eq, isAdvanced);
+			}
+		} else {
+			const eq = equation.replace(basic, (_, a, op, b) => solver(+a, op, +b));
+			return solveEquation(eq, isAdvanced);
+		}
 	}
 
 	return equation;
