@@ -20,8 +20,6 @@ export function solveB(fileName: string, day: string): number {
 			0
 		);
 
-	console.log(sum);
-
 	return sum;
 }
 
