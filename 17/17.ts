@@ -158,7 +158,5 @@ function runSimulation(
 		totalActive += isActive ? 1 : 0;
 	}
 
-	console.log(totalActive);
-
 	return totalActive;
 }
