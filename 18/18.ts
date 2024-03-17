@@ -42,33 +42,25 @@ function solver(a: number, op: string, b: number): string {
 }
 function solveEquation(equation: string, isAdvanced: boolean = false) {
 	const basic = /(\d+) ([+*]) (\d+)/;
-	const braces = /\([\d\s+*]+\)/;
+	const braces = /\(([\d\s+*]+)\)/;
 
 	if (braces.test(equation)) {
-		const eq = equation.replace(/\(([\d\s+*]+)\)/, (_, $) => {
+		const eq = equation.replace(braces, (_, $) => {
 			return solveEquation($, isAdvanced);
 		});
-		return solveEquation(eq, isAdvanced);
-	} else if (basic.test(equation)) {
-		if (isAdvanced) {
-			const addtion = /(\d+) (\+) (\d+)/;
-			const multiply = /(\d+) (\*) (\d+)/;
 
-			if (addtion.test(equation)) {
-				const eq = equation.replace(addtion, (_, a, op, b) =>
-					solver(+a, op, +b)
-				);
-				return solveEquation(eq, isAdvanced);
-			} else {
-				const eq = equation.replace(multiply, (_, a, op, b) =>
-					solver(+a, op, +b)
-				);
-				return solveEquation(eq, isAdvanced);
-			}
-		} else {
-			const eq = equation.replace(basic, (_, a, op, b) => solver(+a, op, +b));
-			return solveEquation(eq, isAdvanced);
-		}
+		return solveEquation(eq, isAdvanced);
+	}
+
+	if (basic.test(equation)) {
+		const re = isAdvanced
+			? /(\d+) (\+) (\d+)/.test(equation)
+				? /(\d+) (\+) (\d+)/
+				: /(\d+) (\*) (\d+)/
+			: basic;
+
+		const eq = equation.replace(re, (_, a, op, b) => solver(+a, op, +b));
+		return solveEquation(eq, isAdvanced);
 	}
 
 	return equation;
