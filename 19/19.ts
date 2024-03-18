@@ -10,15 +10,20 @@ export function solveA(fileName: string, day: string): number {
 	return valid.length;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		{ rule, msgs } = parseInput(data, true),
+		valid = msgs.filter((msg) => rule.test(msg));
+
+	console.log(valid);
+
+	return valid.length;
 }
 
 //Run
-solveA("example_a", "19");
+solveB("example_b", "19");
 
 // Functions
-function parseInput(data: string) {
+function parseInput(data: string, updateRules: boolean = false) {
 	const ruleset: Map<string, string> = new Map();
 
 	const [rules, msgs] = data
@@ -27,6 +32,18 @@ function parseInput(data: string) {
 
 	while (rules.length) {
 		const current = rules.shift()!;
+
+		if (updateRules) {
+			if (current === "8: 42") {
+				rules.push("8: 42 | 42 8");
+				continue;
+			}
+			if (current === "11: 42 31") {
+				rules.push("11: 42 31 | 42 11 31");
+				continue;
+			}
+		}
+
 		const [key, rule] = current.split(":");
 
 		if (/[ab]/.test(rule)) {
@@ -47,7 +64,5 @@ function parseInput(data: string) {
 			}
 		}
 	}
-
 	return { rule: new RegExp(`^${ruleset.get("0")!}$`), msgs };
 }
-// function testMessage(message: string, rule: string)
