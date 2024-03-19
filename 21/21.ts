@@ -5,18 +5,25 @@ import TOOLS from "../00/tools";
 export function solveA(fileName: string, day: string): number {
 	const data = TOOLS.readData(fileName, day),
 		{ foodByAllergen, allFoods } = parseInput(data),
-		dangerous = identifyDangerous(foodByAllergen),
-		safe = identifySafe(dangerous, allFoods);
+		dangerousIngridents = identifyDangerous(foodByAllergen),
+		safe = identifyIngridents(dangerousIngridents, allFoods);
 
 	return safe.length;
 }
-export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+export function solveB(fileName: string, day: string): string {
+	const data = TOOLS.readData(fileName, day),
+		{ foodByAllergen, allFoods } = parseInput(data),
+		dangerousIngridents = identifyDangerous(foodByAllergen);
+
+	getDangerous(foodByAllergen, data);
+
+	// getDangerousIngridentList(dangerousIngridents);
+
+	return "";
 }
 
 //Run
-solveA("example_a", "21");
+solveB("example_b", "21");
 
 // Functions
 type FoodByAllergen = Record<string, string[][]>;
@@ -57,7 +64,54 @@ function identifyDangerous(foodByAllergen: FoodByAllergen) {
 
 	return identified;
 }
-function identifySafe(allergens: AllergenMap, allFoods: string[][]) {
+function intersection(setA: Set<string>, setB: Set<string>) {
+	return new Set([...setA].filter((element) => setB.has(element)));
+}
+function getDangerous(foodByAllergen: FoodByAllergen, data: string) {
+	const allFoods = data.split("\r\n");
+	const identified: Map<string, string> = new Map();
+
+	while (identified.size < Object.keys(foodByAllergen).length) {
+		for (const allergen of Object.keys(foodByAllergen)) {
+			if (identified.has(allergen)) continue;
+
+			let possible: Set<string> = new Set();
+
+			for (let food of allFoods) {
+				const [ingridentsList, allergens] = food.split(" (contains ");
+				const ingridents = ingridentsList.split(" ");
+
+				if (allergens.includes(allergen)) {
+					if (possible.size === 0) {
+						possible = new Set(ingridents);
+					} else {
+						const curentIngridents: Set<string> = new Set();
+
+						for (const word of ingridents) {
+							if (identified.has(word)) continue;
+							else curentIngridents.add(word);
+						}
+
+						console.log(curentIngridents);
+						possible = intersection(possible, curentIngridents);
+					}
+				}
+
+				console.log(identified);
+				console.log({ allergen }, possible);
+			}
+
+			if (possible.size === 1) {
+				identified.set([...possible][0], allergen);
+			}
+		}
+	}
+
+	console.log(identified);
+
+	// return identified;
+}
+function identifyIngridents(allergens: AllergenMap, allFoods: string[][]) {
 	const safe: string[] = [];
 
 	for (const food of allFoods) {
@@ -68,4 +122,14 @@ function identifySafe(allergens: AllergenMap, allFoods: string[][]) {
 	}
 
 	return safe;
+}
+function getDangerousIngridentList(allergens: AllergenMap) {
+	console.log(allergens);
+
+	const x = Array.from(allergens)
+		.sort((a, b) => a[1].localeCompare(b[1]))
+		.map(([ingrident, _]) => ingrident)
+		.join(",");
+
+	console.log(x);
 }

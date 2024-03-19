@@ -17,7 +17,7 @@ describe(`AOC 2020 - Day ${currentDay}`, () => {
 
 	describe("Part B", () => {
 		test("Example", () => {
-			expect(solveB("example_b", currentDay)).toBe(null);
+			expect(solveB("example_b", currentDay)).toBe("mxmxvkd,sqjhc,fvjkl");
 		});
 
 		test("Solution", () => {
