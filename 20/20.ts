@@ -3,11 +3,7 @@ import TOOLS from "../00/tools";
 
 //Solutions
 export function solveA(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day),
-		photos = parseInput(data);
-
-	arrangePhotos(photos);
-
+	const data = TOOLS.readData(fileName, day);
 	return 0;
 }
 export function solveB(fileName: string, day: string): number {
@@ -41,7 +37,6 @@ function parseInput(data: string) {
 
 	return photos;
 }
-
 function getBorders(grid: string[][]) {
 	const borders: Border = ["", "", "", ""];
 	const size = grid.length;
@@ -62,17 +57,3 @@ function getBorders(grid: string[][]) {
 
 	return borders;
 }
-function rotateGrid(grid: string[][]) {
-	const size = grid.length;
-	const newOrientation: string[][] = [];
-
-	for (let i = 0; i < size; i++) {
-		newOrientation.push([]);
-		for (let j = 0; j < size; j++) {
-			newOrientation[i].push(grid[size - j - 1][i]);
-		}
-	}
-
-	return newOrientation;
-}
-function arrangePhotos(photos: Photo[]) {}
