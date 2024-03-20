@@ -10,12 +10,15 @@ export function solveA(fileName: string, day: string): number {
 	return score;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
+	const data = TOOLS.readData(fileName, day),
+		players = parseInput(data),
+		score = playRecursiveCombat(players);
+
 	return 0;
 }
 
 //Run
-solveA("example_a", "22");
+solveB("example_b", "22");
 
 // Functions
 type Players = [number[], number[]];
@@ -57,3 +60,4 @@ function playCombat([p1, p2]: Players) {
 
 	return score;
 }
+function playRecursiveCombat([p1, p2]: Players) {}
