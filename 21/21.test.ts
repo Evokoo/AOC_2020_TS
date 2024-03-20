@@ -21,7 +21,9 @@ describe(`AOC 2020 - Day ${currentDay}`, () => {
 		});
 
 		test("Solution", () => {
-			expect(solveB("input", currentDay)).toBe(null);
+			expect(solveB("input", currentDay)).toBe(
+				"hkflr,ctmcqjf,bfrq,srxphcm,snmxl,zvx,bd,mqvk"
+			);
 		});
 	});
 });
