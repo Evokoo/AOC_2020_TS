@@ -71,8 +71,6 @@ function identifyDangerous(foods: Food[], allergenList: Set<string>) {
 				}
 			}
 
-			console.log(allergen, possible);
-
 			if (possible.size === 1) {
 				identified.set([...possible][0], allergen);
 				found.add(allergen);
