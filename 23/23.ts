@@ -5,8 +5,8 @@ import { LinkedList, ListNode } from "./LinkedList";
 //Solutions
 export function solveA(fileName: string, day: string): number {
 	const data = TOOLS.readData(fileName, day),
-		{ cups, min, max } = parseInput(data),
-		labels = playGame(cups, min, max);
+		cups = parseInput(data),
+		labels = playGame(cups);
 
 	return +labels;
 }
@@ -20,34 +20,35 @@ solveA("example_a", "23");
 
 // Functions
 function parseInput(data: string) {
-	const digits = [...data].map(Number);
 	const cups = new LinkedList<number>();
-	const min = Math.min(...digits);
-	const max = Math.max(...digits);
+	const digits = [...data].map(Number);
 
-	for (let digit of digits) {
-		cups.add(digit);
+	for (const digit of digits) {
+		cups.append(digit);
 	}
 
-	return { cups, min, max };
+	return cups;
 }
+function playGame(cups: LinkedList<number>) {
+	const range = { min: 1, max: 9 };
+	const moves = 100;
 
-function playGame(cups: LinkedList<number>, min: number, max: number) {
 	let currentCup: ListNode<number> = cups.head!;
 
-	for (let move = 0; move < 100; move++) {
+	for (let move = 0; move < moves; move++) {
 		const removed = cups.remove(currentCup.next!, 3);
-		const remaining = new Set(cups.printList);
+		const skip = new Set(removed);
 
 		let destination = currentCup.data - 1;
 
-		while (!remaining.has(destination)) {
-			destination--;
-
-			if (destination < min) {
-				destination = max;
+		while (skip.has(destination) || destination < range.min) {
+			if (destination < range.min) {
+				destination = range.max;
+			} else {
+				destination--;
 			}
 		}
+
 		cups.insert(destination, removed);
 		currentCup = currentCup.next!;
 	}

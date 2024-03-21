@@ -10,11 +10,15 @@ export class ListNode<T> {
 
 export class LinkedList<T> {
 	head: ListNode<T> | null;
+	tail: ListNode<T> | null;
+	keyIndex: number;
 	size: number;
 
 	constructor() {
 		this.head = null;
+		this.tail = null;
 		this.size = 0;
+		this.keyIndex = 0;
 	}
 
 	public add = (data: T): void => {
@@ -22,6 +26,7 @@ export class LinkedList<T> {
 
 		if (!this.head) {
 			this.head = newNode;
+			this.tail = newNode;
 			newNode.next = this.head;
 		} else {
 			let current = this.head;
@@ -32,6 +37,25 @@ export class LinkedList<T> {
 
 			current!.next = newNode;
 			newNode.next = this.head;
+			this.tail = current;
+		}
+
+		this.size++;
+	};
+
+	public append = (data: T): void => {
+		const newNode = new ListNode(data);
+
+		if (!this.tail) {
+			this.head = newNode;
+			this.tail = newNode;
+			newNode.next = this.head;
+		} else {
+			let current = this.tail;
+
+			this.tail = newNode;
+			newNode.next = this.head;
+			current.next = newNode;
 		}
 
 		this.size++;
@@ -129,6 +153,9 @@ export class LinkedList<T> {
 				if (current === this.head) {
 					this.head = newNode; // Update the head if current is the head
 				}
+				if (!current.next) {
+					this.tail = current;
+				}
 				this.size++;
 			}
 		}
@@ -143,6 +170,10 @@ export class LinkedList<T> {
 		}
 		let current = this.head;
 		do {
+			if (current.data === 1) {
+				this.keyIndex = list.length;
+			}
+
 			list.push(current.data);
 			current = current.next!;
 		} while (current !== this.head);
