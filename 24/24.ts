@@ -5,21 +5,26 @@ import TOOLS from "../00/tools";
 export function solveA(fileName: string, day: string): number {
 	const data = TOOLS.readData(fileName, day),
 		directions = parseInput(data),
-		tileCount = runDirections(directions);
+		{ tileCount } = runDirections(directions);
 
-	return tileCount.black;
+	return tileCount;
 }
 export function solveB(fileName: string, day: string): number {
-	const data = TOOLS.readData(fileName, day);
-	return 0;
+	const data = TOOLS.readData(fileName, day),
+		directions = parseInput(data),
+		{ tileState } = runDirections(directions),
+		tileCount = simulateTileStates(tileState);
+
+	return tileCount;
 }
 
 //Run
-solveA("example_a", "24");
+// solveB("example_b", "24");
 
 // Functions
 type Directions = string[][];
-type Hexagon = { q: number; r: number };
+type TileState = Map<string, boolean>;
+type Hexagon = [number, number, number];
 
 function parseInput(data: string) {
 	const directions: Directions = [];
@@ -31,49 +36,100 @@ function parseInput(data: string) {
 
 	return directions;
 }
-
 function runDirections(allDirections: Directions) {
-	const tileState: Map<string, boolean> = new Map();
+	const tileState: TileState = new Map();
 
 	for (const directions of allDirections) {
-		const position: Hexagon = { q: 0, r: 0 };
+		let [q, r, s]: Hexagon = [0, 0, 0];
 
 		for (const move of directions) {
 			switch (move) {
 				case "e":
-					position.q += 1;
+					[q, r, s] = [q + 1, r, s - 1];
 					break;
 				case "w":
-					position.q -= 1;
+					[q, r, s] = [q - 1, r, s + 1];
 					break;
 				case "ne":
-					position.q += 1;
-					position.r -= 1;
+					[q, r, s] = [q + 1, r - 1, s];
 					break;
 				case "nw":
-					position.r -= 1;
+					[q, r, s] = [q, r - 1, s + 1];
 					break;
 				case "se":
-					position.r += 1;
+					[q, r, s] = [q, r + 1, s - 1];
 					break;
 				case "sw":
-					position.q -= 1;
-					position.r += 1;
+					[q, r, s] = [q - 1, r + 1, s];
 					break;
 				default:
 					throw Error("Invalid direction");
 			}
 		}
 
-		const key = `${position.q},${position.r}`;
+		const key = `${q},${r},${s}`;
 		tileState.set(key, tileState.has(key) ? !tileState.get(key) : false);
 	}
 
-	const tileCount = { black: 0, white: 0 };
+	return { tileState, tileCount: blackTileCount(tileState) };
+}
+function blackTileCount(tileState: TileState): number {
+	let blackTiles = 0;
 
-	for (const [_, value] of tileState) {
-		value ? tileCount.white++ : tileCount.black++;
+	for (const [_, state] of tileState) {
+		if (!state) blackTiles++;
 	}
 
-	return tileCount;
+	return blackTiles;
+}
+function simulateTileStates(tileState: TileState, days: number = 10) {
+	const updates: TileState = new Map();
+
+	function getTileState(coord: string, currentState: boolean): boolean {
+		const [q, r, s] = coord.split(",").map(Number);
+		const neighours = [
+			[1, 0, -1],
+			[0, 1, -1],
+			[-1, 1, 0],
+			[-1, 0, 1],
+			[0, -1, 1],
+			[1, -1, 0],
+		];
+
+		let blackTiles = 0;
+
+		for (const [nq, nr, ns] of neighours) {
+			const key = `${q + nq},${r + nr},${s + ns}`;
+
+			if (tileState.has(key) && !tileState.get(key)) {
+				blackTiles++;
+			} else {
+				if (!currentState) tileState.set(key, true);
+			}
+		}
+
+		if (currentState) {
+			return blackTiles === 2 ? false : true;
+		} else {
+			return blackTiles === 0 || blackTiles > 2 ? true : false;
+		}
+	}
+
+	for (let day = 1; day <= 100; day++) {
+		for (const [coord, state] of tileState) {
+			const newState = getTileState(coord, state);
+
+			if (newState !== state) {
+				updates.set(coord, newState);
+			}
+		}
+
+		for (const [coord, state] of updates) {
+			tileState.set(coord, state);
+		}
+
+		updates.clear();
+	}
+
+	return blackTileCount(tileState);
 }
